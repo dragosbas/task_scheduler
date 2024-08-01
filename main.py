@@ -2,7 +2,7 @@ from Service import Service
 from Inventory import Inventory
 from Factory import Factory
 
-from fastapi import FastAPI,Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -23,7 +23,7 @@ async def root():
 @app.post("/")
 async def say_hello(request: Request):
     data = await request.json()
-    amount = data.get("amount",10)
+    amount = data.get("amount", 10)
     service = Service()
 
     product_1 = service.define_product("T1")
@@ -54,10 +54,11 @@ async def say_hello(request: Request):
 
     for machine in set(task.selected_machine for task in schedule):
         result['SCHEDULE'][machine.name] = [task for task in schedule if task.selected_machine == machine]
-
-        # for (time, recipie, index) in [(task.time, task.recipie, index) for (index, task) in enumerate(schedule) if
-        #                                task.selected_machine == machine]:
-        #     print(f"Task no# {index: <4} : {time:<4} - {recipie.get_timer() + time:<4} : {recipie}")
+        print('----------------------------------------')
+        print(machine)
+        for (time, recipie, index) in [(task.time, task.recipie, index) for (index, task) in enumerate(schedule) if
+                                       task.selected_machine == machine]:
+            print(f"Task no# {index: <4} : {time:<4} - {recipie.get_timer() + time:<4} : {recipie}")
 
     result['KPI']['PRODUCTS'] = factory.execute(schedule)
     time = max([task.time + task.recipie.timer for task in schedule])
@@ -67,6 +68,8 @@ async def say_hello(request: Request):
         usage += len(
             {task.selected_machine for task in schedule if task.time <= second < task.time + task.recipie.timer}) / len(
             service.machines)
-    result['KPI']['EFFICIENCY'] = usage / time
-
+    result['KPI']['EFFICIENCY'] = format(usage / time, ".2f")
+    print('----------------')
+    for kpi in result['KPI'].keys():
+        print(f"{kpi}: {result['KPI'][kpi]} ")
     return result
