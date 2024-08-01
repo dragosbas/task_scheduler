@@ -14,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello F"}
@@ -47,12 +48,9 @@ async def say_hello(amount: int = 4):
         print(task)
     print('-------------------------')
 
-    result = {}
+    result = {'SCHEDULE': {},
+              "KPI": {}}
     for machine in set(task.selected_machine for task in schedule):
-        result[machine.name] = [task for task in schedule if task.selected_machine == machine]
-    #
-    #     for (time, recipie, index) in [(task.time, task.recipie, index) for (index, task) in enumerate(schedule) if
-    #                                    task.selected_machine == machine]:
-    #         print(f"Task no# {index: <4} : {time:<4} - {recipie.get_timer() + time:<4} : {recipie}")
+        result['SCHEDULE'][machine.name] = [task for task in schedule if task.selected_machine == machine]
 
     return result
