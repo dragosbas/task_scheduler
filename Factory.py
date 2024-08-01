@@ -113,3 +113,10 @@ class Factory:
             result.append(task)
 
         return result
+
+    def execute(self, schedule: List[Task], inventory: Inventory = Inventory(), ) -> Inventory:
+        for task in schedule:
+            for requirement in task.recipie.requirements:
+                inventory.pop(requirement.uuid)
+            inventory.append(task.recipie.product)
+        return inventory
